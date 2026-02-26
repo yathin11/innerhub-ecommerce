@@ -1,0 +1,7 @@
+body {
+  padding-top: 72px; /* navbar height */
+}
+
+html {
+  scroll-behavior: smooth;
+}
