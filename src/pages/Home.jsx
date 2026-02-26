@@ -26,23 +26,27 @@ export default function Home() {
             for everyday comfort and elevated modern living.
           </p>
 
-          <div className="hero-actions">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.96 }}
-              className="primary-btn"
-            >
-              Shop Now
-            </motion.button>
+         <div className="hero-actions">
 
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.96 }}
-              className="secondary-btn"
-            >
-              Explore
-            </motion.button>
-          </div>
+  <motion.a
+    href="#products"
+    whileHover={{ scale: 1.05 }}
+    whileTap={{ scale: 0.96 }}
+    className="primary-btn"
+  >
+    Shop Now
+  </motion.a>
+
+  <motion.a
+    href="#about"
+    whileHover={{ scale: 1.05 }}
+    whileTap={{ scale: 0.96 }}
+    className="secondary-btn"
+  >
+    Explore
+  </motion.a>
+
+</div>
         </motion.div>
 
         {/* RIGHT IMAGE */}
