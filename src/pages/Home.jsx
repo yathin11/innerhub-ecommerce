@@ -1,67 +1,56 @@
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
 import "./Home.css";
 import heroImage from "../assets/images/hero.jpg";
 
+// 👇 IMPORT SECTIONS
+import Products from "./Products";
+import About from "./About";
+import Contact from "./Contact";
+
 export default function Home() {
   return (
-    <section className="hero"> {/* ✅ removed id="home" */}
-      <div className="hero-container">
+    <>
+      {/* HERO */}
+      <section className="hero">
+        <div className="hero-container">
 
-        {/* LEFT CONTENT */}
-        <motion.div
-          className="hero-content"
-          initial={{ opacity: 0, x: -60 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8 }}
-        >
-          <span className="hero-tag">Premium Men's Essentials</span>
+          {/* LEFT */}
+          <motion.div
+            className="hero-content"
+            initial={{ opacity: 0, x: -60 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <span className="hero-tag">Premium Men's Essentials</span>
 
-          <h1>
-            Style That Speaks <br />
-            <span>Confidence.</span>
-          </h1>
+            <h1>
+              Style That Speaks <br />
+              <span>Confidence.</span>
+            </h1>
 
-          <p>
-            Discover thoughtfully crafted essentials designed
-            for everyday comfort and elevated modern living.
-          </p>
+            <p>
+              Discover thoughtfully crafted essentials designed
+              for everyday comfort and elevated modern living.
+            </p>
+          </motion.div>
 
-          {/* BUTTONS */}
-          <div className="hero-actions">
+          {/* RIGHT */}
+          <motion.div
+            className="hero-image"
+            initial={{ opacity: 0, x: 60 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <img src={heroImage} alt="Hero" />
+          </motion.div>
 
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.96 }}
-            >
-              <Link to="/products" className="primary-btn">
-                Shop Now
-              </Link>
-            </motion.div>
+        </div>
+      </section>
 
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.96 }}
-            >
-              <Link to="/about" className="secondary-btn">
-                Explore
-              </Link>
-            </motion.div>
-
-          </div>
-        </motion.div>
-
-        {/* RIGHT IMAGE */}
-        <motion.div
-          className="hero-image"
-          initial={{ opacity: 0, x: 60 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8 }}
-        >
-          <img src={heroImage} alt="Hero" />
-        </motion.div>
-
-      </div>
-    </section>
+      {/* 👇 ADD THESE SECTIONS */}
+      <Products />
+      <About />
+      <Contact />
+    </>
   );
 }

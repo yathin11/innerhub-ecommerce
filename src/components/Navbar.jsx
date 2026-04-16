@@ -1,30 +1,44 @@
 import { useState } from "react";
+import { NavLink } from "react-router-dom";
 import { FiSearch, FiUser, FiShoppingBag } from "react-icons/fi";
 import "./Navbar.css";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
 
+  const linkClass = ({ isActive }) =>
+    isActive ? "active nav-link" : "nav-link";
+
   return (
     <header className="navbar">
       <div className="nav-container">
 
         {/* LOGO */}
-        <div className="logo">InnerHub</div>
+        <div className="logo">
+          <NavLink to="/" onClick={() => setOpen(false)}>
+            InnerHub
+          </NavLink>
+        </div>
 
         {/* DESKTOP MENU */}
         <nav className="nav-links">
-          <a href="#home">Home</a>
-          <a href="#about">About</a>
-          <a href="#products">Shop</a>
-          <a href="#contact">Contact</a>
+          <NavLink to="/" className={linkClass}>Home</NavLink>
+          <NavLink to="/about" className={linkClass}>About</NavLink>
+          <NavLink to="/products" className={linkClass}>Shop</NavLink>
+          <NavLink to="/contact" className={linkClass}>Contact</NavLink>
         </nav>
 
         {/* RIGHT SIDE ICONS */}
         <div className="nav-icons">
           <FiSearch />
-          <FiUser />
-          <FiShoppingBag />
+
+          <NavLink to="/track-order" onClick={() => setOpen(false)}>
+            <FiUser />
+          </NavLink>
+
+          <NavLink to="/cart" onClick={() => setOpen(false)}>
+            <FiShoppingBag />
+          </NavLink>
         </div>
 
         {/* HAMBURGER */}
@@ -40,10 +54,10 @@ export default function Navbar() {
 
       {/* MOBILE MENU */}
       <div className={`mobile-menu ${open ? "show" : ""}`}>
-        <a href="#home" onClick={() => setOpen(false)}>Home</a>
-        <a href="#about" onClick={() => setOpen(false)}>About</a>
-        <a href="#products" onClick={() => setOpen(false)}>Shop</a>
-        <a href="#contact" onClick={() => setOpen(false)}>Contact</a>
+        <NavLink to="/" onClick={() => setOpen(false)}>Home</NavLink>
+        <NavLink to="/about" onClick={() => setOpen(false)}>About</NavLink>
+        <NavLink to="/products" onClick={() => setOpen(false)}>Shop</NavLink>
+        <NavLink to="/contact" onClick={() => setOpen(false)}>Contact</NavLink>
       </div>
     </header>
   );

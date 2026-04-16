@@ -7,7 +7,10 @@
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
   z-index: 1000;
 }
-
+.logo a {
+  text-decoration: none;
+  color: inherit;
+}
 /* CONTAINER */
 .nav-container {
   max-width: 1200px;
@@ -16,6 +19,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+.active {
+  color: #000;
+  font-weight: bold;
 }
 
 /* LOGO */
