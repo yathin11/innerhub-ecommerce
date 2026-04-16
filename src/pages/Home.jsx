@@ -1,10 +1,11 @@
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import "./Home.css";
-import heroImage from "../assets/images/hero.jpg"; // Add your image here
+import heroImage from "../assets/images/hero.jpg";
 
 export default function Home() {
   return (
-    <section id="home" className="hero">
+    <section className="hero"> {/* ✅ removed id="home" */}
       <div className="hero-container">
 
         {/* LEFT CONTENT */}
@@ -26,27 +27,28 @@ export default function Home() {
             for everyday comfort and elevated modern living.
           </p>
 
-         <div className="hero-actions">
+          {/* BUTTONS */}
+          <div className="hero-actions">
 
-  <motion.a
-    href="#products"
-    whileHover={{ scale: 1.05 }}
-    whileTap={{ scale: 0.96 }}
-    className="primary-btn"
-  >
-    Shop Now
-  </motion.a>
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.96 }}
+            >
+              <Link to="/products" className="primary-btn">
+                Shop Now
+              </Link>
+            </motion.div>
 
-  <motion.a
-    href="#about"
-    whileHover={{ scale: 1.05 }}
-    whileTap={{ scale: 0.96 }}
-    className="secondary-btn"
-  >
-    Explore
-  </motion.a>
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.96 }}
+            >
+              <Link to="/about" className="secondary-btn">
+                Explore
+              </Link>
+            </motion.div>
 
-</div>
+          </div>
         </motion.div>
 
         {/* RIGHT IMAGE */}
