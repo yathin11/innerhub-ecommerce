@@ -116,7 +116,7 @@ function AddProduct() {
     };
 
     try {
-      const res = await fetch("http://localhost:5000/api/products/admin/create", {
+      const res = await fetch("https://innerhub-backend.onrender.com/api/products/admin/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
