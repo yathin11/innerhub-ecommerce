@@ -1,101 +1,130 @@
 import "./Products.css";
+import { useContext, useEffect, useState } from "react";
+import { CartContext } from "../context/CartContext";
+import PhonePopup from "../components/PhonePopup";
+import { useNavigate } from "react-router-dom";
 
-import trunkBlack from "../assets/products/trunk-black.jpg";
-import briefGrey from "../assets/products/brief-grey.jpg";
-import boxerBlue from "../assets/products/boxer-blue.jpg";
-import trunkNavy from "../assets/products/trunk-navy.jpg";
-import briefPack from "../assets/products/brief-pack.jpg";
-
-const products = [
-  {
-    id: 1,
-    name: "UltraSoft Cotton Trunks",
-    brand: "InnerHub",
-    price: 799,
-    oldPrice: 1199,
-    img: trunkBlack,
-    rating: 4.5,
-  },
-  {
-    id: 2,
-    name: "Premium Stretch Briefs",
-    brand: "InnerHub",
-    price: 699,
-    oldPrice: 999,
-    img: briefGrey,
-    rating: 4.3,
-  },
-  {
-    id: 3,
-    name: "Comfort Fit Boxer Shorts",
-    brand: "InnerHub",
-    price: 899,
-    oldPrice: 1299,
-    img: boxerBlue,
-    rating: 4.6,
-  },
-  {
-    id: 4,
-    name: "Everyday Cotton Briefs (Pack of 3)",
-    brand: "InnerHub",
-    price: 999,
-    oldPrice: 1499,
-    img: briefPack,
-    rating: 4.4,
-  },
-  {
-    id: 5,
-    name: "Premium Modal Trunks",
-    brand: "InnerHub",
-    price: 1099,
-    oldPrice: 1699,
-    img: trunkNavy,
-    rating: 4.7,
-  },
-];
 export default function Products() {
+  const { addToCart, phone, savePhone } = useContext(CartContext);
+
+  const [products, setProducts] = useState([]);
+  const [showPopup, setShowPopup] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+
+  const navigate = useNavigate();
+
+  // 🔥 FETCH PRODUCTS FROM BACKEND
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/products");
+        const data = await res.json();
+        setProducts(data);
+      } catch (err) {
+        console.error("Error fetching products", err);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  // ADD TO CART
+  const handleAddToCart = (product) => {
+    if (!phone) {
+      setSelectedProduct(product);
+      setShowPopup(true);
+      return;
+    }
+    addToCart(product);
+  };
+
+  // BUY NOW
+  const handleBuyNow = (product) => {
+    if (!phone) {
+      setSelectedProduct(product);
+      setShowPopup(true);
+      return;
+    }
+    addToCart(product);
+    navigate("/checkout");
+  };
+
   return (
-    <section id="products" className="products-section">
+    <section className="products-section">
       <h2 className="products-title">Men's Innerwear Collection</h2>
 
       <div className="products-grid">
-        {products.map((item) => (
-          <div className="product-card" key={item.id}>
+        {products.map((item) => {
+          // ✅ Get first image from first variant
+          const image =
+            item?.variants?.[0]?.images?.[0] ||
+            "https://via.placeholder.com/300";
 
-            <div className="product-image">
-              <img src={item.img} alt={item.name} />
+          // ✅ Get first size price
+          const price =
+            item?.variants?.[0]?.sizes?.[0]?.offerPrice ||
+            item?.variants?.[0]?.sizes?.[0]?.price ||
+            item.basePrice;
 
-              <div className="discount-badge">
-                {Math.round(
-                  ((item.oldPrice - item.price) / item.oldPrice) * 100
-                )}
-                % OFF
+          const oldPrice =
+            item?.variants?.[0]?.sizes?.[0]?.price ||
+            item.basePrice;
+
+          return (
+            <div className="product-card" key={item._id}>
+              <div className="product-image">
+                <img src={image} alt={item.name} />
+
+                <div className="discount-badge">
+                  {oldPrice && price
+                    ? Math.round(((oldPrice - price) / oldPrice) * 100)
+                    : 0}
+                  % OFF
+                </div>
+
+                <div className="image-overlay">
+                  <button
+                    className="quick-buy"
+                    onClick={() => handleBuyNow(item)}
+                  >
+                    Buy Now
+                  </button>
+                </div>
               </div>
 
-              <div className="image-overlay">
-                <a href="/checkout" className="quick-buy">
-                  Buy Now
-                </a>
+              <div className="product-info">
+                <p className="brand">InnerHub</p>
+                <h3>{item.name}</h3>
+
+                <div className="price-row">
+                  <span className="price">₹{price}</span>
+                  <span className="old-price">₹{oldPrice}</span>
+                </div>
+
+                <div className="rating">⭐ 4.5</div>
+
+                <button onClick={() => handleAddToCart(item)}>
+                  Add to Cart
+                </button>
               </div>
             </div>
-
-            <div className="product-info">
-              <p className="brand">{item.brand}</p>
-              <h3>{item.name}</h3>
-
-              <div className="price-row">
-                <span className="price">₹{item.price}</span>
-                <span className="old-price">₹{item.oldPrice}</span>
-              </div>
-
-              <div className="rating">
-                ⭐ {item.rating}
-              </div>
-            </div>
-
-          </div>
-        ))}
+          );
+        })}
       </div>
+
+      {/* PHONE POPUP */}
+      {showPopup && (
+        <PhonePopup
+          onSubmit={(p) => {
+            savePhone(p);
+            setShowPopup(false);
+
+            if (selectedProduct) {
+              addToCart(selectedProduct);
+            }
+          }}
+        />
+      )}
     </section>
   );
 }

@@ -1,47 +1,73 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import "./TrackOrder.css";
 
 function TrackOrder() {
+  const [orders, setOrders] = useState([]);
+  const [trackingData, setTrackingData] = useState(null);
 
-const [phone,setPhone] = useState("");
-const [orders,setOrders] = useState([]);
+  useEffect(() => {
+    const phone = localStorage.getItem("phone");
 
-const handleSearch = async () => {
+    fetch(`http://localhost:5000/api/orders/${phone}`)
+      .then(res => res.json())
+      .then(data => setOrders(data));
+  }, []);
 
-const res = await fetch(`http://localhost:5000/orders/${phone}`);
-const data = await res.json();
+  // 🔥 Fetch Delhivery Tracking
+  const handleTrack = async (awb) => {
+    try {
+      const res = await fetch(
+        `http://localhost:5000/api/delhivery/track/${awb}`
+      );
+      const data = await res.json();
 
-setOrders(data);
-};
+      setTrackingData(data);
+    } catch (err) {
+      alert("Tracking failed");
+    }
+  };
 
-return (
+  return (
+    <div className="track-container">
+      <h2>Your Orders</h2>
 
-<div>
+      {orders.map((order) => (
+        <div key={order._id} className="order-card">
 
-<h2>Track Your Order</h2>
+          <p>Order ID: {order._id}</p>
+          <p>Status: {order.status}</p>
 
-<input
-type="text"
-placeholder="Enter Phone Number"
-value={phone}
-onChange={(e)=>setPhone(e.target.value)}
-/>
+          <p>
+            Tracking ID:{" "}
+            {order.tracking_id || "Not available"}
+          </p>
 
-<button onClick={handleSearch}>Track</button>
+          {order.tracking_id && (
+            <button onClick={() => handleTrack(order.tracking_id)}>
+              Track Live
+            </button>
+          )}
+        </div>
+      ))}
 
-{orders.map(order => (
+      {/* 🔥 SHOW TRACKING RESULT */}
+      {trackingData && (
+        <div className="tracking-box">
+          <h3>Tracking Details</h3>
 
-<div key={order.id}>
-
-<h4>Order #{order.id}</h4>
-<p>Status: {order.status}</p>
-<p>Tracking ID: {order.tracking_id}</p>
-
-</div>
-
-))}
-
-</div>
-);
+          {trackingData?.ShipmentData?.[0]?.Shipment?.Scans.map(
+            (scan, i) => (
+              <div key={i} className="scan">
+                <p><b>Status:</b> {scan.ScanDetail.Scan}</p>
+                <p><b>Location:</b> {scan.ScanDetail.ScannedLocation}</p>
+                <p><b>Date:</b> {scan.ScanDetail.ScanDateTime}</p>
+              </div>
+            )
+          )}
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default TrackOrder;

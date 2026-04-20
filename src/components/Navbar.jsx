@@ -1,13 +1,45 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { FiSearch, FiUser, FiShoppingBag } from "react-icons/fi";
+import PhonePopup from "../components/PhonePopup";
 import "./Navbar.css";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
+  const [hasOrders, setHasOrders] = useState(false);
 
   const linkClass = ({ isActive }) =>
     isActive ? "active nav-link" : "nav-link";
+
+  // ✅ Check if user has orders
+  useEffect(() => {
+    const phone = localStorage.getItem("phone");
+
+    if (phone) {
+      fetch(`http://localhost:5000/api/orders/${phone}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.length > 0) setHasOrders(true);
+        })
+        .catch(() => {});
+    }
+  }, []);
+
+  // ✅ Handle user icon click
+  const handleUserClick = (e) => {
+    e.preventDefault();
+
+    const phone = localStorage.getItem("phone");
+
+    if (!phone) {
+      setShowPopup(true); // ask phone
+    } else if (!hasOrders) {
+      alert("No orders found for this number");
+    } else {
+      window.location.href = "/track-order"; // go to orders
+    }
+  };
 
   return (
     <header className="navbar">
@@ -32,9 +64,10 @@ export default function Navbar() {
         <div className="nav-icons">
           <FiSearch />
 
-          <NavLink to="/track-order" onClick={() => setOpen(false)}>
+          {/* ✅ USER ICON CONTROLLED */}
+          <a href="/track-order" onClick={handleUserClick}>
             <FiUser />
-          </NavLink>
+          </a>
 
           <NavLink to="/cart" onClick={() => setOpen(false)}>
             <FiShoppingBag />
@@ -59,6 +92,16 @@ export default function Navbar() {
         <NavLink to="/products" onClick={() => setOpen(false)}>Shop</NavLink>
         <NavLink to="/contact" onClick={() => setOpen(false)}>Contact</NavLink>
       </div>
+
+      {/* ✅ PHONE POPUP */}
+      {showPopup && (
+        <PhonePopup
+          onSubmit={(phone) => {
+            localStorage.setItem("phone", phone);
+            setShowPopup(false);
+          }}
+        />
+      )}
     </header>
   );
 }

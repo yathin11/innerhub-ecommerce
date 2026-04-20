@@ -1,41 +1,41 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "./Admin.css";
 
-function ProductsList() {
+export default function ProductsList() {
+  const [products, setProducts] = useState([]);
+  const navigate = useNavigate();
 
-  const [products,setProducts] = useState([]);
-
-  useEffect(()=>{
-
+  useEffect(() => {
     fetch("http://localhost:5000/api/products")
-    .then(res=>res.json())
-    .then(data=>setProducts(data));
-
-  },[]);
+      .then(res => res.json())
+      .then(data => setProducts(data));
+  }, []);
 
   return (
+    <div className="admin-container">
+      <h2 className="admin-title">Products</h2>
 
-    <div style={{padding:"40px"}}>
+      <div className="admin-grid">
+        {products.map((p) => (
+          <div key={p._id} className="admin-card">
 
-      <h2>Products</h2>
+            <img
+              src={p.variants?.[0]?.images?.[0]}
+              alt=""
+              style={{ width: "100%", height: "150px", objectFit: "cover" }}
+            />
 
-      {products.map(product => (
+            <h3>{p.name}</h3>
+            <p>₹ {p.basePrice}</p>
 
-        <div key={product.id} style={{marginBottom:"20px"}}>
+            <button onClick={() => navigate(`/admin/edit-product/${p._id}`)}>
+              Edit
+            </button>
 
-          <h3>{product.name}</h3>
-
-          <p>{product.description}</p>
-
-          <p>Price: ₹{product.base_price}</p>
-
-        </div>
-
-      ))}
-
+          </div>
+        ))}
+      </div>
     </div>
-
   );
-
 }
-
-export default ProductsList;

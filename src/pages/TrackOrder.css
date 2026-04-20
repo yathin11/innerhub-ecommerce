@@ -1,0 +1,29 @@
+.track-container {
+  padding: 30px;
+}
+
+.order-card {
+  border: 1px solid #ddd;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 10px;
+}
+
+button {
+  padding: 8px 12px;
+  background: black;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.tracking-box {
+  margin-top: 30px;
+  padding: 20px;
+  border: 1px solid #ccc;
+}
+
+.scan {
+  border-bottom: 1px solid #eee;
+  padding: 10px 0;
+}
