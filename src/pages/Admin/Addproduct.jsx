@@ -116,13 +116,13 @@ function AddProduct() {
     };
 
     try {
-      const res = await fetch("https://innerhub-backend.onrender.com/api/products/admin/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(product)
-      });
+      const res = await fetch("https://innerhub-backend.onrender.com/api/admin/products", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify(product)
+})
 
       if (!res.ok) throw new Error();
 
