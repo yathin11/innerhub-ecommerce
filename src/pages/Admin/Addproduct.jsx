@@ -38,10 +38,14 @@ function AddProduct() {
     const file = e.target.files[0];
     if (!file) return;
 
-    const url = await uploadToCloudinary(file); // ✅ FIXED NAME
+const url = await uploadToCloudinary(file);
 
+if (!url) {
+  alert("Image upload failed");
+  return;
+}
     const updated = [...variants];
-    updated[vIndex].images.push(url);
+updated[vIndex].images = [...updated[vIndex].images, url];
     setVariants(updated);
   };
 
