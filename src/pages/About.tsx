@@ -1,95 +1,80 @@
 import { motion } from "framer-motion";
-
 import "./About.css";
-
 import aboutImage from "../assets/images/about.jpg";
 
+const fadeLeft = {
+  hidden: {
+    opacity: 0,
+    x: -48,
+  },
+  visible: {
+    opacity: 1,
+    x: 0,
+  },
+};
+
+const fadeRight = {
+  hidden: {
+    opacity: 0,
+    x: 48,
+  },
+  visible: {
+    opacity: 1,
+    x: 0,
+  },
+};
+
 export default function About() {
-
   return (
-    <section
-      id="about"
-      className="about"
-    >
-
+    <section id="about" className="about">
       <div className="about-wrapper">
-
-        {/* LEFT IMAGE */}
         <motion.div
           className="about-image"
-          initial={{
-            opacity: 0,
-            x: -60,
-          }}
-          whileInView={{
-            opacity: 1,
-            x: 0,
-          }}
+          variants={fadeLeft}
+          initial="hidden"
+          whileInView="visible"
           transition={{
-            duration: 0.8,
+            duration: 0.75,
+            ease: "easeOut",
           }}
-          viewport={{ once: true }}
+          viewport={{ once: true, amount: 0.35 }}
         >
-
-          <img
-            src={aboutImage}
-            alt="About InnerHub"
-          />
-
+          <img src={aboutImage} alt="YESSIX premium men's essentials" />
         </motion.div>
 
-        {/* RIGHT CONTENT */}
         <motion.div
           className="about-content"
-          initial={{
-            opacity: 0,
-            x: 60,
-          }}
-          whileInView={{
-            opacity: 1,
-            x: 0,
-          }}
+          variants={fadeRight}
+          initial="hidden"
+          whileInView="visible"
           transition={{
-            duration: 0.8,
+            duration: 0.75,
+            ease: "easeOut",
+            delay: 0.08,
           }}
-          viewport={{ once: true }}
+          viewport={{ once: true, amount: 0.35 }}
         >
-
-          <span className="about-tag">
-            Our Story
-          </span>
+          <span className="about-tag">Our Story</span>
 
           <h2>
             Built for Comfort.
             <br />
-
-            <span>
-              Designed for Confidence.
-            </span>
+            <span>Designed for Confidence.</span>
           </h2>
 
           <p>
-            InnerHub is a premium
-            men’s essentials brand
-            redefining everyday
-            comfort. What started
-            with innerwear is
-            evolving into a complete
-            lifestyle experience —
-            thoughtfully designed
-            and digitally refined.
+            YESSIX is a premium men&apos;s essentials brand built around
+            everyday comfort, clean design, and dependable quality. What begins
+            with innerwear grows into a sharper lifestyle experience for modern
+            men.
           </p>
 
           <p>
-            We believe premium
-            doesn’t have to shout.
-            It should feel effortless,
-            timeless, and personal —
-            just like InnerHub.
+            We believe premium should feel effortless. Quiet details, better
+            fits, and thoughtful materials come together to make essentials that
+            feel personal from the first wear.
           </p>
-
         </motion.div>
-
       </div>
     </section>
   );

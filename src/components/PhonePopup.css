@@ -1,0 +1,109 @@
+.phone-popup-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(17, 17, 17, 0.45);
+  animation: phoneBackdropIn 0.2s ease both;
+}
+
+.phone-popup {
+  position: relative;
+  width: min(420px, 100%);
+  padding: 28px;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 24px 70px rgba(17, 17, 17, 0.22);
+  animation: phonePopupIn 0.28s ease both;
+}
+
+.phone-popup-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 50%;
+  background: #f4f4f4;
+  color: #111111;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.phone-popup-kicker {
+  margin: 0 0 8px;
+  color: #ff3f6c;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.phone-popup h2 {
+  margin: 0 0 10px;
+  color: #111111;
+  font-size: 26px;
+}
+
+.phone-popup p {
+  margin: 0 0 20px;
+  color: #666666;
+  line-height: 1.5;
+}
+
+.phone-popup input {
+  width: 100%;
+  height: 46px;
+  padding: 0 13px;
+  border: 1px solid #d7d7d7;
+  border-radius: 6px;
+  font-size: 15px;
+  outline: none;
+}
+
+.phone-popup input:focus {
+  border-color: #ff3f6c;
+  box-shadow: 0 0 0 3px rgba(255, 63, 108, 0.12);
+}
+
+.phone-popup button[type="button"]:not(.phone-popup-close) {
+  width: 100%;
+  height: 46px;
+  margin-top: 16px;
+  border: 0;
+  border-radius: 6px;
+  background: #111111;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.phone-popup button[type="button"]:not(.phone-popup-close):hover {
+  background: #ff3f6c;
+}
+
+@keyframes phoneBackdropIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes phonePopupIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

@@ -1,72 +1,208 @@
 import { useEffect, useState } from "react";
 import "./TrackOrder.css";
 
+type OrderType = {
+  _id: string;
+  status: string;
+  tracking_id?: string;
+};
+
+type ScanType = {
+  ScanDetail: {
+    Scan: string;
+    ScannedLocation: string;
+    ScanDateTime: string;
+  };
+};
+
+type TrackingType = {
+  ShipmentData?: {
+    Shipment?: {
+      Scans: ScanType[];
+    };
+  }[];
+};
+
 function TrackOrder() {
-  const [orders, setOrders] = useState([]);
-  const [trackingData, setTrackingData] = useState(null);
+  const [phone, setPhone] = useState<string>(() => localStorage.getItem("phone") || "");
+  const [orders, setOrders] = useState<OrderType[]>([]);
+  const [trackingData, setTrackingData] = useState<TrackingType | null>(null);
+  const [isLoadingOrders, setIsLoadingOrders] = useState<boolean>(false);
+  const [trackingAwb, setTrackingAwb] = useState<string>("");
+  const [hasSearched, setHasSearched] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
 
-  useEffect(() => {
-    const phone = localStorage.getItem("phone");
+  const fetchOrders = async (phoneNumber: string): Promise<void> => {
+    const cleanPhone = phoneNumber.replace(/\D/g, "");
 
-    fetch(`http://localhost:5000/api/orders/${phone}`)
-      .then(res => res.json())
-      .then(data => setOrders(data));
-  }, []);
+    if (cleanPhone.length !== 10) {
+      setError("Enter a valid 10 digit phone number");
+      setOrders([]);
+      return;
+    }
 
-  // 🔥 Fetch Delhivery Tracking
-  const handleTrack = async (awb) => {
     try {
-      const res = await fetch(
-        `http://localhost:5000/api/delhivery/track/${awb}`
-      );
-      const data = await res.json();
+      setIsLoadingOrders(true);
+      setHasSearched(true);
+      setError("");
+      setTrackingData(null);
 
-      setTrackingData(data);
-    } catch (err) {
-      alert("Tracking failed");
+      localStorage.setItem("phone", cleanPhone);
+
+      const res = await fetch(`http://localhost:5000/api/orders/${cleanPhone}`);
+
+      if (!res.ok) {
+        throw new Error("Unable to fetch orders");
+      }
+
+      const data: OrderType[] = await res.json();
+      setOrders(data);
+    } catch {
+      setOrders([]);
+      setError("Unable to fetch orders. Please try again.");
+    } finally {
+      setIsLoadingOrders(false);
     }
   };
 
+  useEffect(() => {
+    const savedPhone = localStorage.getItem("phone");
+
+    if (savedPhone) {
+      fetchOrders(savedPhone);
+    }
+  }, []);
+
+  const handleTrack = async (awb: string): Promise<void> => {
+    try {
+      setTrackingAwb(awb);
+      setTrackingData(null);
+
+      const res = await fetch(`http://localhost:5000/api/delhivery/track/${awb}`);
+
+      if (!res.ok) {
+        throw new Error("Tracking failed");
+      }
+
+      const data: TrackingType = await res.json();
+      setTrackingData(data);
+    } catch {
+      alert("Tracking failed");
+    } finally {
+      setTrackingAwb("");
+    }
+  };
+
+  const scans = trackingData?.ShipmentData?.[0]?.Shipment?.Scans || [];
+
   return (
-    <div className="track-container">
-      <h2>Your Orders</h2>
+    <main className="track-page">
+      <section className="track-header">
+        <p className="track-kicker">YESSIX Orders</p>
+        <h1>Track Your Order</h1>
+        <p>
+          Enter the mobile number used during checkout to view your order status.
+        </p>
+      </section>
 
-      {orders.map((order) => (
-        <div key={order._id} className="order-card">
+      <section className="track-search-card">
+        <div className="track-search-row">
+          <input
+            value={phone}
+            inputMode="numeric"
+            maxLength={10}
+            placeholder="9876543210"
+            onChange={(e) => setPhone(e.target.value)}
+          />
 
-          <p>Order ID: {order._id}</p>
-          <p>Status: {order.status}</p>
-
-          <p>
-            Tracking ID:{" "}
-            {order.tracking_id || "Not available"}
-          </p>
-
-          {order.tracking_id && (
-            <button onClick={() => handleTrack(order.tracking_id)}>
-              Track Live
-            </button>
-          )}
+          <button
+            type="button"
+            onClick={() => fetchOrders(phone)}
+            disabled={isLoadingOrders}
+          >
+            {isLoadingOrders ? (
+              <>
+                <span className="track-spinner light"></span>
+                Searching
+              </>
+            ) : (
+              "Search"
+            )}
+          </button>
         </div>
-      ))}
 
-      {/* 🔥 SHOW TRACKING RESULT */}
+        {error && <div className="track-error">{error}</div>}
+      </section>
+
+      <section className="orders-list">
+        {orders.map((order) => (
+          <article key={order._id} className="order-card">
+            <div>
+              <span className="order-label">Order ID</span>
+              <h2>{order._id}</h2>
+
+              <p>
+                Status: <strong>{order.status}</strong>
+              </p>
+
+              <p>
+                Tracking ID:{" "}
+                <strong>{order.tracking_id || "Not available"}</strong>
+              </p>
+            </div>
+
+            {order.tracking_id && (
+              <button
+                type="button"
+                onClick={() => handleTrack(order.tracking_id!)}
+                disabled={trackingAwb === order.tracking_id}
+              >
+                {trackingAwb === order.tracking_id ? (
+                  <>
+                    <span className="track-spinner light"></span>
+                    Tracking
+                  </>
+                ) : (
+                  "Track Live"
+                )}
+              </button>
+            )}
+          </article>
+        ))}
+
+        {hasSearched && !isLoadingOrders && !error && orders.length === 0 && (
+          <div className="track-empty">
+            <h2>No orders found</h2>
+            <p>No orders are linked to this phone number yet.</p>
+          </div>
+        )}
+      </section>
+
       {trackingData && (
-        <div className="tracking-box">
-          <h3>Tracking Details</h3>
+        <section className="tracking-box">
+          <p className="track-kicker">Live Tracking</p>
+          <h2>Tracking Details</h2>
 
-          {trackingData?.ShipmentData?.[0]?.Shipment?.Scans.map(
-            (scan, i) => (
-              <div key={i} className="scan">
-                <p><b>Status:</b> {scan.ScanDetail.Scan}</p>
-                <p><b>Location:</b> {scan.ScanDetail.ScannedLocation}</p>
-                <p><b>Date:</b> {scan.ScanDetail.ScanDateTime}</p>
-              </div>
-            )
+          {scans.length > 0 ? (
+            <div className="scan-timeline">
+              {scans.map((scan, i) => (
+                <article key={i} className="scan">
+                  <span></span>
+
+                  <div>
+                    <h3>{scan.ScanDetail.Scan}</h3>
+                    <p>{scan.ScanDetail.ScannedLocation}</p>
+                    <time>{scan.ScanDetail.ScanDateTime}</time>
+                  </div>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <p className="track-muted">No live tracking scans available yet.</p>
           )}
-        </div>
+        </section>
       )}
-    </div>
+    </main>
   );
 }
 

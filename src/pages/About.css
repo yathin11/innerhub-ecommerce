@@ -1,46 +1,66 @@
 .about {
-  padding: 100px 24px;
+  padding: 104px 24px;
   background: #ffffff;
 }
 
 .about-wrapper {
   max-width: 1200px;
-  margin: auto;
-  display: flex;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(360px, 0.88fr);
   align-items: center;
-  gap: 60px;
+  gap: 72px;
 }
 
-/* IMAGE */
 .about-image {
-  flex: 1;
+  position: relative;
+  min-height: 520px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #f1f1f1;
+}
+
+.about-image::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  pointer-events: none;
 }
 
 .about-image img {
   width: 100%;
-  border-radius: 20px;
+  height: 100%;
+  min-height: 520px;
+  display: block;
   object-fit: cover;
+  transition: transform 0.7s ease;
 }
 
-/* CONTENT */
+.about-image:hover img {
+  transform: scale(1.035);
+}
+
 .about-content {
-  flex: 1;
+  max-width: 520px;
 }
 
 .about-tag {
-  background: #ffe9ef;
+  display: inline-flex;
+  margin-bottom: 18px;
   color: #ff3f6c;
-  padding: 6px 14px;
-  border-radius: 20px;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 .about-content h2 {
-  font-size: 42px;
-  margin: 20px 0;
-  font-weight: 800;
-  line-height: 1.2;
+  margin: 0 0 22px;
+  color: #111111;
+  font-size: 46px;
+  font-weight: 900;
+  line-height: 1.08;
 }
 
 .about-content h2 span {
@@ -48,20 +68,52 @@
 }
 
 .about-content p {
+  margin: 0 0 18px;
+  color: #555555;
   font-size: 17px;
-  color: #555;
-  margin-bottom: 20px;
-  line-height: 1.6;
+  line-height: 1.75;
 }
 
-/* RESPONSIVE */
 @media (max-width: 992px) {
+  .about {
+    padding: 76px 20px;
+  }
+
   .about-wrapper {
-    flex-direction: column;
-    text-align: center;
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+
+  .about-image,
+  .about-image img {
+    min-height: 420px;
+  }
+
+  .about-content {
+    max-width: 680px;
   }
 
   .about-content h2 {
-    font-size: 32px;
+    font-size: 38px;
+  }
+}
+
+@media (max-width: 560px) {
+  .about {
+    padding: 58px 16px;
+  }
+
+  .about-image,
+  .about-image img {
+    min-height: 320px;
+  }
+
+  .about-content h2 {
+    font-size: 31px;
+  }
+
+  .about-content p {
+    font-size: 15.5px;
+    line-height: 1.7;
   }
 }

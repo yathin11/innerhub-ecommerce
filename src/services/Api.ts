@@ -1,135 +1,162 @@
-const BASE_URL = "https://innerhub-backend.onrender.com/api";
+export const BASE_URL = "https://innerhub-backend.onrender.com/api";
 
-// ======================
-// USER (PHONE)
-// ======================
-export const saveUserPhone = async (phone) => {
-  const res = await fetch(`${BASE_URL}/user`, {
-    method: "POST",
+const request = async <T>(
+  endpoint: string,
+  options?: RequestInit
+): Promise<T> => {
+  const res = await fetch(`${BASE_URL}${endpoint}`, {
+    ...options,
     headers: {
       "Content-Type": "application/json",
+      ...(options?.headers || {}),
     },
+  });
+
+  if (!res.ok) {
+    throw new Error(`Request failed: ${res.status}`);
+  }
+
+  return res.json() as Promise<T>;
+};
+
+export type SizeType = {
+  size: string;
+  price: number | string;
+  offerPercent?: number | string;
+  offerPrice: number | string;
+  stock: number | string;
+};
+
+export type VariantType = {
+  color: string;
+  images: string[];
+  sizes: SizeType[];
+};
+
+export type ProductType = {
+  _id?: string;
+  name: string;
+  description?: string;
+  basePrice?: number;
+  variants?: VariantType[];
+};
+
+export type OrderType = {
+  _id: string;
+  id?: number;
+  status: string;
+  tracking_id?: string;
+  total?: number;
+};
+
+export type UserType = {
+  phone: string;
+};
+
+export type CartItemType = {
+  phone?: string;
+  productId: string;
+  quantity: number;
+};
+
+export const saveUserPhone = async (phone: string): Promise<UserType> => {
+  return request<UserType>("/user", {
+    method: "POST",
     body: JSON.stringify({ phone }),
   });
-
-  return res.json();
 };
 
-// ======================
-// PRODUCTS
-// ======================
-export const getProducts = async () => {
-  const res = await fetch(`${BASE_URL}/products`);
-  return res.json();
+export const getProducts = async (): Promise<ProductType[]> => {
+  return request<ProductType[]>("/products");
 };
 
-export const addProduct = async (product) => {
-  const res = await fetch(`${BASE_URL}/admin/products`, {
+export const getProduct = async (id: string): Promise<ProductType> => {
+  return request<ProductType>(`/products/${id}`);
+};
+
+export const addProduct = async (
+  product: ProductType
+): Promise<ProductType> => {
+  return request<ProductType>("/admin/products", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
     body: JSON.stringify(product),
   });
-
-  return res.json();
 };
 
-export const updateProduct = async (id, product) => {
-  const res = await fetch(`${BASE_URL}/admin/products/${id}`, {
+export const updateProduct = async (
+  id: string,
+  product: ProductType
+): Promise<ProductType> => {
+  return request<ProductType>(`/admin/products/${id}`, {
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
     body: JSON.stringify(product),
   });
-
-  return res.json();
 };
 
-export const deleteProduct = async (id) => {
-  const res = await fetch(`${BASE_URL}/admin/products/${id}`, {
+export const deleteProduct = async (
+  id: string
+): Promise<{ message: string }> => {
+  return request<{ message: string }>(`/admin/products/${id}`, {
     method: "DELETE",
   });
-
-  return res.json();
 };
 
-// ======================
-// CART
-// ======================
-export const getCart = async (phone) => {
-  const res = await fetch(`${BASE_URL}/cart/${phone}`);
-  return res.json();
+export const getCart = async (phone: string): Promise<CartItemType[]> => {
+  return request<CartItemType[]>(`/cart/${phone}`);
 };
 
-export const addToCartApi = async (phone, productId) => {
-  const res = await fetch(`${BASE_URL}/cart/add`, {
+export const addToCartApi = async (
+  phone: string,
+  productId: string
+): Promise<CartItemType> => {
+  return request<CartItemType>("/cart/add", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
     body: JSON.stringify({
       phone,
       productId,
       quantity: 1,
     }),
   });
-
-  return res.json();
 };
 
-export const removeFromCartApi = async (phone, productId) => {
-  const res = await fetch(`${BASE_URL}/cart/remove`, {
+export const removeFromCartApi = async (
+  phone: string,
+  productId: string
+): Promise<{ message: string }> => {
+  return request<{ message: string }>("/cart/remove", {
     method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ phone, productId }),
+    body: JSON.stringify({
+      phone,
+      productId,
+    }),
   });
-
-  return res.json();
 };
 
-// ======================
-// ORDERS
-// ======================
-export const placeOrder = async (phone) => {
-  const res = await fetch(`${BASE_URL}/order`, {
+export const placeOrder = async (phone: string): Promise<OrderType> => {
+  return request<OrderType>("/order", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
     body: JSON.stringify({ phone }),
   });
-
-  return res.json();
 };
 
-export const getOrders = async (phone) => {
-  const res = await fetch(`${BASE_URL}/orders/${phone}`);
-  return res.json();
+export const getOrders = async (phone: string): Promise<OrderType[]> => {
+  return request<OrderType[]>(`/orders/${phone}`);
 };
 
-
-export const getAllOrders = async () => {
-  const res = await fetch(`${BASE_URL}/admin/orders`);
-  return res.json();
+export const getAllOrders = async (): Promise<OrderType[]> => {
+  return request<OrderType[]>("/admin/orders");
 };
 
-export const updateOrderStatus = async (id, status) => {
-  const res = await fetch(`${BASE_URL}/admin/orders/${id}`, {
+export const updateOrderStatus = async (
+  id: string,
+  status: string
+): Promise<OrderType> => {
+  return request<OrderType>(`/admin/orders/${id}`, {
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
     body: JSON.stringify({ status }),
   });
-
-  return res.json();
 };
 
-export const getUsers = async () => {
-  const res = await fetch(`${BASE_URL}/admin/users`);
-  return res.json();
+export const getUsers = async (): Promise<UserType[]> => {
+  return request<UserType[]>("/admin/users");
 };

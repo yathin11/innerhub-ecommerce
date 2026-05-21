@@ -1,139 +1,131 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
-
-import {
-  FiMail,
-  FiPhone,
-  FiMapPin,
-} from "react-icons/fi";
-
+import { FiMail, FiMapPin, FiPhone } from "react-icons/fi";
 import "./Contact.css";
 
+const revealLeft = {
+  hidden: {
+    opacity: 0,
+    x: -48,
+  },
+  visible: {
+    opacity: 1,
+    x: 0,
+  },
+};
+
+const revealRight = {
+  hidden: {
+    opacity: 0,
+    x: 48,
+  },
+  visible: {
+    opacity: 1,
+    x: 0,
+  },
+};
+
 export default function Contact() {
+  const [isSending, setIsSending] = useState<boolean>(false);
+  const [sent, setSent] = useState<boolean>(false);
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
+    e.preventDefault();
+
+    setIsSending(true);
+
+    window.setTimeout(() => {
+      setIsSending(false);
+      setSent(true);
+    }, 800);
+  };
 
   return (
-    <section
-      id="contact"
-      className="contact"
-    >
-
+    <section id="contact" className="contact">
       <div className="contact-container">
-
-        {/* LEFT SIDE */}
         <motion.div
           className="contact-info"
-          initial={{
-            opacity: 0,
-            x: -60,
-          }}
-          whileInView={{
-            opacity: 1,
-            x: 0,
-          }}
+          variants={revealLeft}
+          initial="hidden"
+          whileInView="visible"
           transition={{
-            duration: 0.8,
+            duration: 0.75,
+            ease: "easeOut",
           }}
-          viewport={{ once: true }}
+          viewport={{ once: true, amount: 0.35 }}
         >
+          <p className="contact-kicker">Contact</p>
 
           <h2>
-
-            Let’s Build Something{" "}
-
-            <span>
-              Together.
-            </span>
-
+            We’re Here for <span>Every Detail.</span>
           </h2>
 
           <p>
-            Have a question,
-            feedback, or
-            partnership inquiry?
-            Our team is here to
-            help you.
+            Need help with sizing, orders, delivery, or a product question?
+            Reach out to the YESSIX team and we’ll help you quickly.
           </p>
 
-          <div className="info-item">
+          <div className="info-list">
+            <div className="info-item">
+              <FiMail />
+              <span>support@yessix.com</span>
+            </div>
 
-            <FiMail />
+            <div className="info-item">
+              <FiPhone />
+              <span>+91 98765 43210</span>
+            </div>
 
-            <span>
-              support@innerhub.com
-            </span>
-
+            <div className="info-item">
+              <FiMapPin />
+              <span>Chennai, India</span>
+            </div>
           </div>
-
-          <div className="info-item">
-
-            <FiPhone />
-
-            <span>
-              +91 98765 43210
-            </span>
-
-          </div>
-
-          <div className="info-item">
-
-            <FiMapPin />
-
-            <span>
-              Chennai, India
-            </span>
-
-          </div>
-
         </motion.div>
 
-        {/* RIGHT SIDE */}
         <motion.div
           className="contact-form-wrapper"
-          initial={{
-            opacity: 0,
-            x: 60,
-          }}
-          whileInView={{
-            opacity: 1,
-            x: 0,
-          }}
+          variants={revealRight}
+          initial="hidden"
+          whileInView="visible"
           transition={{
-            duration: 0.8,
+            duration: 0.75,
+            ease: "easeOut",
+            delay: 0.08,
           }}
-          viewport={{ once: true }}
+          viewport={{ once: true, amount: 0.35 }}
         >
+          <form className="contact-form" onSubmit={handleSubmit}>
+            {sent && (
+              <div className="contact-success">
+                Message sent. We’ll get back to you soon.
+              </div>
+            )}
 
-          <form className="contact-form">
+            <input type="text" placeholder="Your Name" required />
 
-            <input
-              type="text"
-              placeholder="Your Name"
-            />
+            <input type="email" placeholder="Email Address" required />
 
-            <input
-              type="email"
-              placeholder="Email Address"
-            />
-
-            <textarea placeholder="Your Message"></textarea>
+            <textarea placeholder="Your Message" required></textarea>
 
             <motion.button
-              whileHover={{
-                scale: 1.03,
-              }}
               whileTap={{
-                scale: 0.97,
+                scale: 0.98,
               }}
               type="submit"
+              disabled={isSending}
             >
-
-              Send Message
-
+              {isSending ? (
+                <>
+                  <span className="contact-spinner"></span>
+                  Sending
+                </>
+              ) : (
+                "Send Message"
+              )}
             </motion.button>
-
           </form>
-
         </motion.div>
-
       </div>
     </section>
   );

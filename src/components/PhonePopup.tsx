@@ -1,30 +1,69 @@
 import { useState } from "react";
+import "./PhonePopup.css";
 
-export default function PhonePopup({ onSubmit }) {
-  const [phone, setPhone] = useState("");
+type PhonePopupProps = {
+  onSubmit: (phone: string) => void;
+  onClose?: () => void;
+  title?: string;
+  description?: string;
+};
 
-  const handleSubmit = () => {
-    if (phone.length === 10) {
-      localStorage.setItem("phone", phone);
-      onSubmit(phone);
-    } else {
-      alert("Enter valid phone number");
+export default function PhonePopup({
+  onSubmit,
+  onClose,
+  title = "Enter Phone Number",
+  description = "Use the phone number you entered while placing your order.",
+}: PhonePopupProps) {
+  const [phone, setPhone] = useState<string>("");
+
+  const handleSubmit = (): void => {
+    const cleanPhone = phone.replace(/\D/g, "");
+
+    if (cleanPhone.length !== 10) {
+      alert("Enter a valid 10 digit phone number");
+      return;
     }
+
+    localStorage.setItem("phone", cleanPhone);
+    onSubmit(cleanPhone);
   };
 
   return (
-    <div style={{ padding: "20px", background: "#eee" }}>
-      <h3>Enter Phone Number</h3>
+    <div className="phone-popup-backdrop" role="presentation">
+      <section
+        className="phone-popup"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="phone-popup-title"
+      >
+        {onClose && (
+          <button
+            className="phone-popup-close"
+            type="button"
+            onClick={onClose}
+            aria-label="Close"
+          >
+            ×
+          </button>
+        )}
 
-      <input
-        value={phone}
-        onChange={(e) => setPhone(e.target.value)}
-        placeholder="Enter phone"
-      />
+        <p className="phone-popup-kicker">YESSIX</p>
 
-      <br /><br />
+        <h2 id="phone-popup-title">{title}</h2>
+        <p>{description}</p>
 
-      <button onClick={handleSubmit}>Continue</button>
+        <input
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          placeholder="9876543210"
+          inputMode="numeric"
+          maxLength={10}
+        />
+
+        <button type="button" onClick={handleSubmit}>
+          Continue
+        </button>
+      </section>
     </div>
   );
 }
