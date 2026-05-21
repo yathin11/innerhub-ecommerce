@@ -1,8 +1,8 @@
-import React from "react";
-import { useState, useEffect } from "react";
-import { NavLink } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
 import { FiSearch, FiUser, FiShoppingBag } from "react-icons/fi";
 import PhonePopup from "./PhonePopup";
+import "./Navbar.css";
 
 type LinkClassProps = {
   isActive: boolean;
@@ -13,55 +13,55 @@ export default function Navbar() {
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [hasOrders, setHasOrders] = useState<boolean>(false);
 
-  const linkClass = ({ isActive }: LinkClassProps): string =>
-    isActive ? "active nav-link" : "nav-link";
+  const navigate = useNavigate();
 
-  // ✅ Check if user has orders
+  const linkClass = ({ isActive }: LinkClassProps): string =>
+    isActive ? "nav-link active" : "nav-link";
+
   useEffect(() => {
     const phone = localStorage.getItem("phone");
 
-    if (phone) {
-      fetch(`http://localhost:5000/api/orders/${phone}`)
-        .then((res: Response) => res.json())
-        .then((data: unknown[]) => {
-          if (data.length > 0) {
-            setHasOrders(true);
-          }
-        })
-        .catch(() => {});
-    }
+    if (!phone) return;
+
+    fetch(`http://localhost:5000/api/orders/${phone}`)
+      .then((res: Response) => res.json())
+      .then((data: unknown[]) => {
+        setHasOrders(data.length > 0);
+      })
+      .catch(() => {
+        setHasOrders(false);
+      });
   }, []);
 
-  // ✅ Handle user icon click
-  const handleUserClick = (
-    e: React.MouseEvent<HTMLAnchorElement>
-  ): void => {
+  const handleUserClick = (e: React.MouseEvent<HTMLAnchorElement>): void => {
     e.preventDefault();
 
     const phone = localStorage.getItem("phone");
 
     if (!phone) {
       setShowPopup(true);
-    } else if (!hasOrders) {
-      alert("No orders found for this number");
-    } else {
-      window.location.href = "/track-order";
+      return;
     }
+
+    if (!hasOrders) {
+      alert("No orders found for this number");
+      return;
+    }
+
+    setOpen(false);
+    navigate("/track-order");
   };
 
   return (
     <header className="navbar">
       <div className="nav-container">
-
-        {/* LOGO */}
         <div className="logo">
           <NavLink to="/" onClick={() => setOpen(false)}>
-            InnerHub
+            YESSIX
           </NavLink>
         </div>
 
-        {/* DESKTOP MENU */}
-        <nav className="nav-links">
+        <nav className="nav-links" aria-label="Primary navigation">
           <NavLink to="/" className={linkClass}>
             Home
           </NavLink>
@@ -79,33 +79,44 @@ export default function Navbar() {
           </NavLink>
         </nav>
 
-        {/* RIGHT SIDE ICONS */}
         <div className="nav-icons">
-          <FiSearch />
+          <button className="nav-icon-btn" type="button" aria-label="Search">
+            <FiSearch />
+          </button>
 
-          {/* USER ICON */}
-          <a href="/track-order" onClick={handleUserClick}>
+          <a
+            className="nav-icon-btn"
+            href="/track-order"
+            onClick={handleUserClick}
+            aria-label="Track order"
+          >
             <FiUser />
           </a>
 
-          <NavLink to="/cart" onClick={() => setOpen(false)}>
+          <NavLink
+            className="nav-icon-btn"
+            to="/cart"
+            onClick={() => setOpen(false)}
+            aria-label="Cart"
+          >
             <FiShoppingBag />
           </NavLink>
         </div>
 
-        {/* HAMBURGER */}
-        <div
+        <button
           className={`hamburger ${open ? "active" : ""}`}
-          onClick={() => setOpen(!open)}
+          onClick={() => setOpen((prev) => !prev)}
+          type="button"
+          aria-label="Toggle menu"
+          aria-expanded={open}
         >
           <span></span>
           <span></span>
           <span></span>
-        </div>
+        </button>
       </div>
 
-      {/* MOBILE MENU */}
-      <div className={`mobile-menu ${open ? "show" : ""}`}>
+      <nav className={`mobile-menu ${open ? "show" : ""}`} aria-label="Mobile navigation">
         <NavLink to="/" onClick={() => setOpen(false)}>
           Home
         </NavLink>
@@ -121,9 +132,8 @@ export default function Navbar() {
         <NavLink to="/contact" onClick={() => setOpen(false)}>
           Contact
         </NavLink>
-      </div>
+      </nav>
 
-      {/* PHONE POPUP */}
       {showPopup && (
         <PhonePopup
           onSubmit={(phone: string) => {
