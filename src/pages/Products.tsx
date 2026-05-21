@@ -66,7 +66,8 @@ export default function Products() {
       product.variants?.[0]?.sizes?.[0]?.price ||
       product.basePrice;
 
-    const oldPrice = product.variants?.[0]?.sizes?.[0]?.price || product.basePrice;
+    const oldPrice =
+      product.variants?.[0]?.sizes?.[0]?.price || product.basePrice;
 
     const discount =
       oldPrice > price ? Math.round(((oldPrice - price) / oldPrice) * 100) : 0;
@@ -101,7 +102,10 @@ export default function Products() {
 
   const handleBuyNow = (product: ProductType): void => {
     handleAddToCart(product);
-    navigate("/checkout");
+
+    window.setTimeout(() => {
+      navigate("/checkout");
+    }, 100);
   };
 
   if (loading) {
@@ -162,7 +166,11 @@ export default function Products() {
                   <button
                     className="quick-buy"
                     type="button"
-                    onClick={() => handleBuyNow(item)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleBuyNow(item);
+                    }}
                   >
                     Buy Now
                   </button>
@@ -185,9 +193,15 @@ export default function Products() {
                 <div className="rating">4.5 Rated Essential</div>
 
                 <button
-                  className={`add-cart-btn ${addedId === item._id ? "added" : ""}`}
+                  className={`add-cart-btn ${
+                    addedId === item._id ? "added" : ""
+                  }`}
                   type="button"
-                  onClick={() => handleAddToCart(item)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleAddToCart(item);
+                  }}
                 >
                   {addedId === item._id ? "Added" : "Add to Cart"}
                 </button>

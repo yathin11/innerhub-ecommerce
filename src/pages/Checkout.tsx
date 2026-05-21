@@ -49,14 +49,40 @@ export default function Checkout() {
       return;
     }
 
-    setIsPlacingOrder(true);
+    try {
+      setIsPlacingOrder(true);
 
-    window.setTimeout(() => {
+      const res = await fetch("https://innerhub-backend.onrender.com/api/order", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          phone: cleanPhone,
+          fullName,
+          address,
+          payment,
+          items: cart,
+          subtotal,
+          discount,
+          delivery,
+          codFee,
+          total,
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Order failed");
+      }
+
       localStorage.setItem("phone", cleanPhone);
       setOrderPlaced(true);
       clearCart();
+    } catch {
+      alert("Failed to place order. Please try again.");
+    } finally {
       setIsPlacingOrder(false);
-    }, 1400);
+    }
   };
 
   if (orderPlaced) {
@@ -78,6 +104,28 @@ export default function Checkout() {
 
             <button type="button" onClick={() => navigate("/products")}>
               Continue Shopping
+            </button>
+          </div>
+        </section>
+      </main>
+    );
+  }
+
+  if (cart.length === 0) {
+    return (
+      <main className="checkout-success-page">
+        <section className="checkout-success-card">
+          <p className="checkout-kicker">Checkout</p>
+          <h1>Your cart is empty</h1>
+          <p>Add products to your cart before placing an order.</p>
+
+          <div className="checkout-success-actions">
+            <button type="button" onClick={() => navigate("/products")}>
+              Shop Products
+            </button>
+
+            <button type="button" onClick={() => navigate("/")}>
+              Go Home
             </button>
           </div>
         </section>
