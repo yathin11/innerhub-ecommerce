@@ -45,7 +45,31 @@ const res = await fetch(`${API_URL}/api/products`);
 
     fetchProducts();
   }, []);
+  const handleDelete = async (id: string) => {
+  const confirmed = window.confirm(
+    "Are you sure you want to delete this product?"
+  );
 
+  if (!confirmed) return;
+
+  try {
+    const API_URL = import.meta.env.VITE_API_URL;
+
+    const res = await fetch(`${API_URL}/api/products/${id}`, {
+      method: "DELETE",
+    });
+
+    if (!res.ok) {
+      throw new Error("Delete failed");
+    }
+
+    setProducts((prev) =>
+      prev.filter((product) => product._id !== id)
+    );
+  } catch {
+    alert("Failed to delete product");
+  }
+};
   return (
     <main className="admin-page">
       <div className="admin-header">
@@ -109,13 +133,23 @@ const res = await fetch(`${API_URL}/api/products`);
                   <h3>{p.name}</h3>
                   <p>₹{p.basePrice}</p>
 
-                  <button
-                    className="admin-btn secondary"
-                    type="button"
-                    onClick={() => navigate(`/admin/edit-product/${p._id}`)}
-                  >
-                    Edit Product
-                  </button>
+                  <div className="admin-actions">
+  <button
+    className="admin-btn secondary"
+    type="button"
+    onClick={() => navigate(`/admin/edit-product/${p._id}`)}
+  >
+    Edit Product
+  </button>
+
+  <button
+    className="admin-btn"
+    type="button"
+    onClick={() => handleDelete(p._id)}
+  >
+    Delete
+  </button>
+</div>
                 </div>
               </article>
             );
