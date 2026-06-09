@@ -29,7 +29,9 @@ function Orders() {
       setHasSearched(true);
       setError("");
 
-      const res = await fetch(`http://localhost:5000/api/orders/${cleanPhone}`);
+      const res = await fetch(
+  `https://innerhub-backend.onrender.com/api/orders/${cleanPhone}`
+);
 
       if (!res.ok) {
         throw new Error("Unable to fetch orders");

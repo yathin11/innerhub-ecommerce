@@ -35,7 +35,9 @@ export default function EditProduct() {
         setIsLoading(true);
         setError("");
 
-        const res = await fetch(`http://localhost:5000/api/products/${id}`);
+       const res = await fetch(
+  `https://innerhub-backend.onrender.com/api/products/${id}`
+);
 
         if (!res.ok) {
           throw new Error("Product not found");
@@ -109,13 +111,16 @@ export default function EditProduct() {
     try {
       setIsSaving(true);
 
-      const res = await fetch(`http://localhost:5000/api/products/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(product),
-      });
+    const res = await fetch(
+  `${import.meta.env.VITE_API_URL}/api/products/${id}`,
+  {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(product),
+  }
+);
 
       if (!res.ok) {
         throw new Error("Update failed");

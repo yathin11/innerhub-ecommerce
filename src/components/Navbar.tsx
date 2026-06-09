@@ -23,7 +23,7 @@ export default function Navbar() {
 
     if (!phone) return;
 
-    fetch(`http://localhost:5000/api/orders/${phone}`)
+    fetch(`https://innerhub-backend.onrender.com/api/orders/${phone}`)
       .then((res: Response) => res.json())
       .then((data: unknown[]) => {
         setHasOrders(data.length > 0);

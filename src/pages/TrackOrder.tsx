@@ -49,7 +49,7 @@ function TrackOrder() {
 
       localStorage.setItem("phone", cleanPhone);
 
-      const res = await fetch(`http://localhost:5000/api/orders/${cleanPhone}`);
+      const res = await fetch(`https://innerhub-backend.onrender.com/api/orders/${cleanPhone}`);
 
       if (!res.ok) {
         throw new Error("Unable to fetch orders");
@@ -78,7 +78,7 @@ function TrackOrder() {
       setTrackingAwb(awb);
       setTrackingData(null);
 
-      const res = await fetch(`http://localhost:5000/api/delhivery/track/${awb}`);
+      const res = await fetch(`https://innerhub-backend.onrender.com/api/delhivery/track/${awb}`);
 
       if (!res.ok) {
         throw new Error("Tracking failed");
