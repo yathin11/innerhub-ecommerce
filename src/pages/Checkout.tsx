@@ -52,25 +52,26 @@ export default function Checkout() {
     try {
       setIsPlacingOrder(true);
 
-      const res = await fetch("https://innerhub-backend.onrender.com/api/order", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          phone: cleanPhone,
-          fullName,
-          address,
-          payment,
-          items: cart,
-          subtotal,
-          discount,
-          delivery,
-          codFee,
-          total,
-        }),
-      });
+      const API_URL = import.meta.env.VITE_API_URL;
 
+const res = await fetch(`${API_URL}/api/orders/create`, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    phone: cleanPhone,
+    fullName,
+    address,
+    payment,
+    items: cart,
+    subtotal, 
+    discount,
+    delivery,
+    codFee,
+    totalAmount: total,
+  }),
+});
       if (!res.ok) {
         throw new Error("Order failed");
       }
